@@ -1,2 +1,2 @@
-# hello_triangle
-Simple hello triangle opengl example using SDL2 and GLEW
+# Hello Triangle
+Simple hello triangle OpenGL example using SDL2 and GLEW
