@@ -19,7 +19,11 @@ int checkGlError(const char* call) {
 }
 
 //We can wrap the check error in a define to disable the checking
-#define GL_DEBUG(m) m; checkGlError(#m);
+#define GL_DEBUG(m) m; checkGlError(#m); 
+
+//TODO Figure out how to get this compound statement to work so it's one r value
+//statment. Current breaks on void return values. 
+//#define GL_DEBUG(m) ({__auto_type ret = m; checkGlError(#m); ret;})
 
 
 //Compiles a shader
@@ -189,9 +193,11 @@ int main(int argc, char** argv) {
     GL_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, vbo_verticies));
     //Upload our triangle data to the vbo
     GL_DEBUG(glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW));
-    //Set the first buffer in the vao to this and tell it how to access the data. 
+    //We get the location of the 'in_position' named in the vertex shader
+    GLint in_position_loc = GL_DEBUG(glGetAttribLocation(program, "in_position"));
+    //Set the location in the vao to this buffer and tell it how to access the data. 
     //We have 2 points per vertex hence 2, and sizeof(float) * 2 and the GL_FLOAT
-    GL_DEBUG(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
+    GL_DEBUG(glVertexAttribPointer(in_position_loc, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
     //Enable this buffer
     GL_DEBUG(glEnableVertexAttribArray(0));
     //Now geneate the vbo for colors
@@ -200,8 +206,10 @@ int main(int argc, char** argv) {
     GL_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, vbo_colors));
     //Upload the color data in the same way we did triangles
     GL_DEBUG(glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW));
+    //We get the location of the 'in_color' named in the vertex shader
+    GLint in_color_loc = GL_DEBUG(glGetAttribLocation(program, "in_color"));
     //This time we have RGBA values so set up 4 floats per vertex
-    GL_DEBUG(glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0));
+    GL_DEBUG(glVertexAttribPointer(in_color_loc, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 4, 0));
     //Enable the vbo
     GL_DEBUG(glEnableVertexAttribArray(1));
     //Now we set to use the shader program we previously compiled
