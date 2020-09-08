@@ -7,7 +7,7 @@
 
 
 //Simple check error call
-int checkGlError(const char* call) {
+int check_gl_error(const char* call) {
     int err = glGetError();
     if (err != 0) {
         int prog;
@@ -19,15 +19,15 @@ int checkGlError(const char* call) {
 }
 
 //We can wrap the check error in a define to disable the checking
-#define GL_DEBUG(m) m; checkGlError(#m); 
+#define GL_DEBUG(m) m; check_gl_error(#m); 
 
 //TODO Figure out how to get this compound statement to work so it's one r value
 //statment. Current breaks on void return values. 
-//#define GL_DEBUG(m) ({__auto_type ret = m; checkGlError(#m); ret;})
+//#define GL_DEBUG(m) ({__auto_type ret = m; check_gl_error(#m); ret;})
 
 
 //Compiles a shader
-static GLint compileShader(GLenum shader_type, const char* shader_file)
+static GLint compile_shader(GLenum shader_type, const char* shader_file)
 {
     //Open our shader file
     FILE *f;
@@ -149,8 +149,8 @@ int main(int argc, char** argv) {
     //Compile our shaders
     GLint vertex_shader;
     GLint fragment_shader;
-    vertex_shader = compileShader(GL_VERTEX_SHADER, "vertex.glsl");
-    fragment_shader = compileShader(GL_FRAGMENT_SHADER, "fragment.glsl");
+    vertex_shader = compile_shader(GL_VERTEX_SHADER, "vertex.glsl");
+    fragment_shader = compile_shader(GL_FRAGMENT_SHADER, "fragment.glsl");
     //If we have a problem quit
     if (vertex_shader < 0 || fragment_shader < 0)
         return -1;
