@@ -176,7 +176,8 @@ int main(int argc, char **argv) {
   // vbo_colors is for the triangle colors
   GLuint vao, vbo_verticies, vbo_colors;
 
-  // Generate Vertex Array and bind it  (meaning subsequnece calls will use it)
+  // Generate a single Vertex Array and bind it  (meaning subsequnece calls will
+  // use it)
   GL_DEBUG(glGenVertexArrays(1, &vao));
   GL_DEBUG(glBindVertexArray(vao));
   // Generate the buffer object for the verticies
@@ -194,7 +195,7 @@ int main(int argc, char **argv) {
   GL_DEBUG(glVertexAttribPointer(in_position_loc, 2, GL_FLOAT, GL_FALSE,
                                  sizeof(float) * 2, 0));
   // Enable this buffer
-  GL_DEBUG(glEnableVertexAttribArray(0));
+  GL_DEBUG(glEnableVertexAttribArray(in_position_loc));
   // Now geneate the vbo for colors
   GL_DEBUG(glGenBuffers(1, &vbo_colors));
   // Bind it for the next few calls
@@ -208,7 +209,7 @@ int main(int argc, char **argv) {
   GL_DEBUG(glVertexAttribPointer(in_color_loc, 4, GL_FLOAT, GL_FALSE,
                                  sizeof(float) * 4, 0));
   // Enable the vbo
-  GL_DEBUG(glEnableVertexAttribArray(1));
+  GL_DEBUG(glEnableVertexAttribArray(in_color_loc));
   // Now we set to use the shader program we previously compiled
   glUseProgram(program);
 
