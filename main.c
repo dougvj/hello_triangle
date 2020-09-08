@@ -12,7 +12,8 @@ int check_gl_error(const char* call) {
     if (err != 0) {
         int prog;
         glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
-        fprintf(stderr, "%s\nGlError:%u CurrentProgram: %u\n\n", call, err, prog);
+        fprintf(stderr,
+                "%s\nGlError:%u CurrentProgram: %u\n\n", call, err, prog);
         exit(1);
     }
     return err;
@@ -33,13 +34,15 @@ static GLint compile_shader(GLenum shader_type, const char* shader_file)
     FILE *f;
     f = fopen(shader_file, "r");
     if (!f) {
-        fprintf(stderr, "Unable to open shader file %s. Aborting.\n", shader_file);
+        fprintf(stderr,
+                "Unable to open shader file %s. Aborting.\n", shader_file);
         return -1;
     }
     //Get the shader size
     fseek(f, 0, SEEK_END);
     long fsize = ftell(f);
-    fprintf(stderr, "Compiling %s. Shader size: %li bytes\n", shader_file, fsize);
+    fprintf(stderr,
+            "Compiling %s. Shader size: %li bytes\n", shader_file, fsize);
     char shader_source[fsize + 1];
     fseek(f, 0, SEEK_SET);
     fread(shader_source, fsize, 1, f);
@@ -192,7 +195,11 @@ int main(int argc, char** argv) {
     //bind it for the next few calls
     GL_DEBUG(glBindBuffer(GL_ARRAY_BUFFER, vbo_verticies));
     //Upload our triangle data to the vbo
-    GL_DEBUG(glBufferData(GL_ARRAY_BUFFER, sizeof(triangle), triangle, GL_STATIC_DRAW));
+    GL_DEBUG(glBufferData(
+                GL_ARRAY_BUFFER,
+                sizeof(triangle),
+                triangle,
+                GL_STATIC_DRAW));
     //We get the location of the 'in_position' named in the vertex shader
     GLint in_position_loc = GL_DEBUG(glGetAttribLocation(program, "in_position"));
     //Set the location in the vao to this buffer and tell it how to access the data. 
