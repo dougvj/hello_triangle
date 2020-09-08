@@ -1,4 +1,5 @@
 #include <GL/glew.h>
+#include <GL/glu.h>
 #include <SDL2/SDL.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,7 +11,8 @@ int check_gl_error(const char *call) {
   if (err != 0) {
     int prog;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
-    fprintf(stderr, "%s\nGlError:%u CurrentProgram: %u\n\n", call, err, prog);
+    fprintf(stderr, "%s\nGlError: '%s' CurrentProgram: %i\n\n", call,
+            gluErrorString(err), prog);
     exit(1);
   }
   return err;
@@ -64,13 +66,17 @@ static GLint compile_shader(GLenum shader_type, const char *shader_file) {
 }
 
 // Verticies for our output triangle
-static const GLfloat triangle[] = {
-    -1.0f, 0.0f, 1.0f, -1.0f, 1.0f, 1.0f,
+static const GLfloat triangle[][2] = {
+    {-1.0f,  0.0f}, 
+    { 1.0f, -1.0f},
+    { 1.0f,  1.0f},
 };
 
 // Color for our output triangle
-static const GLfloat colors[] = {
-    1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0,
+static const GLfloat colors[][4] = {
+    {1.0, 0.0, 0.0, 1.0},
+    {0.0, 1.0, 0.0, 1.0},
+    {0.0, 0.0, 1.0, 1.0}
 };
 
 int main(int argc, char **argv) {
