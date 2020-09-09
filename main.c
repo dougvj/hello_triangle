@@ -5,6 +5,27 @@
 #include <string.h>
 #include <time.h>
 
+const char *glErrorString(GLenum err) {
+  switch (err) {
+  case GL_NO_ERROR:
+    return "GL_NO_ERROR: No error has been recorded";
+  case GL_INVALID_ENUM:
+    return "GL_INVALID_ENUM: An unacceptable value is specified for an "
+           "enumerated argument";
+  case GL_INVALID_OPERATION:
+    return "GL_INVALID_OPERATION: The specified operation is not allowed in "
+           "the current state";
+  case GL_INVALID_FRAMEBUFFER_OPERATION:
+    return "GL_INVALID_FRAMEBUFFER_OPERATION: The command is trying to render "
+           "to or read from the framebuffer while the currently bound "
+           "framebuffer is not framebuffer complete";
+  case GL_OUT_OF_MEMORY:
+    return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the "
+           "command";
+  }
+  return "Unspecified Error";
+}
+
 // Simple check error call
 int check_gl_error(const char *call) {
   int err = glGetError();
@@ -12,7 +33,7 @@ int check_gl_error(const char *call) {
     int prog;
     glGetIntegerv(GL_CURRENT_PROGRAM, &prog);
     fprintf(stderr, "%s\nGlError: '%s' CurrentProgram: %i\n\n", call,
-            gluErrorString(err), prog);
+            glErrorString(err), prog);
     exit(1);
   }
   return err;
@@ -67,7 +88,7 @@ static GLint compile_shader(GLenum shader_type, const char *shader_file) {
 
 // Verticies for our output triangle
 static const GLfloat triangle[][2] = {
-    {-1.0f,  0.0f}, 
+    {-1.0f,  0.0f},
     { 1.0f, -1.0f},
     { 1.0f,  1.0f},
 };
