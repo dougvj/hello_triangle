@@ -87,17 +87,27 @@ static GLint compile_shader(GLenum shader_type, const char *shader_file) {
 }
 
 // Verticies for our output triangle
+//
+// We enable culling as an example below, so  the order these
+// are provided actually matter. We need, using the right hand
+// rule, for the trangle's face to be towards the screen
+//
+// Recall that screen space coordinates are laid out like the following:
+//  0.0  0.0 -> Center
+// -1.0 -1.0 -> Bottom left
+//  1.0  1.0 -> Top right
 static const GLfloat triangle[][2] = {
-    {-1.0f,  0.0f},
-    { 1.0f, -1.0f},
-    { 1.0f,  1.0f},
+    {0.0f, 1.0f},   // Top Middle
+    {-1.0f, -1.0f}, // Bottom Left
+    {1.0f, -1.0f}   // Bottom Right
 };
 
-// Color for our output triangle
+// Color for our output triangle, corresponding to our verticies
+// In this case R, G, B, and an Alpha channel
 static const GLfloat colors[][4] = {
-    {1.0, 0.0, 0.0, 1.0},
-    {0.0, 1.0, 0.0, 1.0},
-    {0.0, 0.0, 1.0, 1.0}
+    {1.0, 0.0, 0.0, 1.0}, // Red
+    {0.0, 1.0, 0.0, 1.0}, // Green
+    {0.0, 0.0, 1.0, 1.0}, // Blue
 };
 
 int main(int argc, char **argv) {
@@ -115,9 +125,9 @@ int main(int argc, char **argv) {
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
   // Create the SDL window
-  SDL_Window *window = SDL_CreateWindow("Hello World", SDL_WINDOWPOS_UNDEFINED,
-                                        SDL_WINDOWPOS_UNDEFINED, 1024, 768,
-                                        SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+  SDL_Window *window = SDL_CreateWindow(
+      "Hello Triangle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024,
+      768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
   if (window == NULL) {
     fprintf(stderr, "Unable to create SDL Window\n");
     fprintf(stderr, "%s\n", SDL_GetError());
@@ -148,6 +158,10 @@ int main(int argc, char **argv) {
 
   // enable depth testing. This doesn't matter for a single triangle but
   // useful if you have a 3d scene or multiple triangles that overlap
+  //
+  // While you could get away with rendering triangles in the right order,
+  // this is difficult to do in complex scenes or scenes where you need
+  // per-pixel ordering.
   GL_DEBUG(glEnable(GL_DEPTH_TEST));
   GL_DEBUG(glDepthFunc(GL_LESS));
   GL_DEBUG(glDepthRange(0, 1000));
@@ -156,8 +170,10 @@ int main(int argc, char **argv) {
   GL_DEBUG(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
   GL_DEBUG(glEnable(GL_MULTISAMPLE));
   // We can cull triangles that are wound away from us. Also important for 3d
-  // scenes but not this so mcuh. Note that since we have it enabled here
+  // scenes but not this so much. Note that since we have it enabled here
   // the order we provide the verticies in the triangle array matters
+  //
+  // The rule that if the triangle is wound facing the viewer it will be shown
   GL_DEBUG(glEnable(GL_CULL_FACE));
 
   // Compile our shaders
@@ -167,7 +183,7 @@ int main(int argc, char **argv) {
   fragment_shader = compile_shader(GL_FRAGMENT_SHADER, "fragment.glsl");
   // If we have a problem quit
   if (vertex_shader < 0 || fragment_shader < 0)
-    return -1;
+    exit(1);
 
   // Link the shaders together into a single 'shader program'
   GLuint program;
@@ -186,9 +202,10 @@ int main(int argc, char **argv) {
     GLchar info_log[info_log_length];
     glGetProgramInfoLog(program, info_log_length, NULL, info_log);
     fprintf(stderr, "Shader linker failure: %s\n", info_log);
-    return -1;
+    exit(1);
   }
-  // Once the shaders are linked into a programthey don't need to be kept around
+  // Once the shaders are linked into a program they don't need to be kept
+  // around
   glDeleteShader(vertex_shader);
   glDeleteShader(fragment_shader);
   // Handles for various buffers
@@ -197,8 +214,8 @@ int main(int argc, char **argv) {
   // vbo_colors is for the triangle colors
   GLuint vao, vbo_verticies, vbo_colors;
 
-  // Generate a single Vertex Array and bind it  (meaning subsequnece calls will
-  // use it)
+  // Generate a single Vertex Array and bind it  (meaning subsequent calls to do
+  // with vertex arrays will refer to it)
   GL_DEBUG(glGenVertexArrays(1, &vao));
   GL_DEBUG(glBindVertexArray(vao));
   // Generate the buffer object for the verticies
@@ -248,5 +265,6 @@ int main(int argc, char **argv) {
     // Swap the output
     SDL_GL_SwapWindow(window);
   }
+  SDL_Quit();
   return 0;
 }
