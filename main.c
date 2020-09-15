@@ -5,29 +5,30 @@
 #include <string.h>
 #include <time.h>
 
-const char *glErrorString(GLenum err) {
+const char* glErrorString(GLenum err) {
   switch (err) {
-  case GL_NO_ERROR:
-    return "GL_NO_ERROR: No error has been recorded";
-  case GL_INVALID_ENUM:
-    return "GL_INVALID_ENUM: An unacceptable value is specified for an "
-           "enumerated argument";
-  case GL_INVALID_OPERATION:
-    return "GL_INVALID_OPERATION: The specified operation is not allowed in "
-           "the current state";
-  case GL_INVALID_FRAMEBUFFER_OPERATION:
-    return "GL_INVALID_FRAMEBUFFER_OPERATION: The command is trying to render "
-           "to or read from the framebuffer while the currently bound "
-           "framebuffer is not framebuffer complete";
-  case GL_OUT_OF_MEMORY:
-    return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the "
-           "command";
+    case GL_NO_ERROR:
+      return "GL_NO_ERROR: No error has been recorded";
+    case GL_INVALID_ENUM:
+      return "GL_INVALID_ENUM: An unacceptable value is specified for an "
+             "enumerated argument";
+    case GL_INVALID_OPERATION:
+      return "GL_INVALID_OPERATION: The specified operation is not allowed in "
+             "the current state";
+    case GL_INVALID_FRAMEBUFFER_OPERATION:
+      return "GL_INVALID_FRAMEBUFFER_OPERATION: The command is trying to "
+             "render "
+             "to or read from the framebuffer while the currently bound "
+             "framebuffer is not framebuffer complete";
+    case GL_OUT_OF_MEMORY:
+      return "GL_OUT_OF_MEMORY: There is not enough memory left to execute the "
+             "command";
   }
   return "Unspecified Error";
 }
 
 // Simple check error call
-int check_gl_error(const char *call) {
+int check_gl_error(const char* call) {
   int err = glGetError();
   if (err != 0) {
     int prog;
@@ -40,8 +41,8 @@ int check_gl_error(const char *call) {
 }
 
 // We can wrap the check error in a define to disable the checking
-#define GL_DEBUG(m)                                                            \
-  m;                                                                           \
+#define GL_DEBUG(m) \
+  m;                \
   check_gl_error(#m);
 
 // TODO Figure out how to get this compound statement to work so it's one r
@@ -49,9 +50,9 @@ int check_gl_error(const char *call) {
 //({__auto_type ret = m; check_gl_error(#m); ret;})
 
 // Compiles a shader
-static GLint compile_shader(GLenum shader_type, const char *shader_file) {
+static GLint compile_shader(GLenum shader_type, const char* shader_file) {
   // Open our shader file
-  FILE *f;
+  FILE* f;
   f = fopen(shader_file, "r");
   if (!f) {
     fprintf(stderr, "Unable to open shader file %s. Aborting.\n", shader_file);
@@ -68,7 +69,7 @@ static GLint compile_shader(GLenum shader_type, const char *shader_file) {
   fclose(f);
   // Compile the shader
   GLuint shader = GL_DEBUG(glCreateShader(shader_type));
-  const char *ss = shader_source;
+  const char* ss = shader_source;
   glShaderSource(shader, 1, &ss, NULL);
   glCompileShader(shader);
   // Check status
@@ -97,20 +98,20 @@ static GLint compile_shader(GLenum shader_type, const char *shader_file) {
 // -1.0 -1.0 -> Bottom left
 //  1.0  1.0 -> Top right
 static const GLfloat triangle[][2] = {
-    {0.0f, 1.0f},   // Top Middle
-    {-1.0f, -1.0f}, // Bottom Left
-    {1.0f, -1.0f}   // Bottom Right
+    {0.0f, 1.0f},    // Top Middle
+    {-1.0f, -1.0f},  // Bottom Left
+    {1.0f, -1.0f}    // Bottom Right
 };
 
 // Color for our output triangle, corresponding to our verticies
 // In this case R, G, B, and an Alpha channel
 static const GLfloat colors[][4] = {
-    {1.0, 0.0, 0.0, 1.0}, // Red
-    {0.0, 1.0, 0.0, 1.0}, // Green
-    {0.0, 0.0, 1.0, 1.0}, // Blue
+    {1.0, 0.0, 0.0, 1.0},  // Red
+    {0.0, 1.0, 0.0, 1.0},  // Green
+    {0.0, 0.0, 1.0, 1.0},  // Blue
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   // Initialize SDL
   if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
     fprintf(stderr, "Unable to initialize SDL\n");
@@ -125,7 +126,7 @@ int main(int argc, char **argv) {
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
   SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
   // Create the SDL window
-  SDL_Window *window = SDL_CreateWindow(
+  SDL_Window* window = SDL_CreateWindow(
       "Hello Triangle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024,
       768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
   if (window == NULL) {
@@ -141,7 +142,7 @@ int main(int argc, char **argv) {
     exit(1);
   }
   // Output OpenGL Version
-  const unsigned char *version = GL_DEBUG(glGetString(GL_VERSION));
+  const unsigned char* version = GL_DEBUG(glGetString(GL_VERSION));
   if (version == NULL) {
     fprintf(stderr, "Unable to determine OpenGL version\n");
     exit(1);
